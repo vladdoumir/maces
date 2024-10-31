@@ -11,7 +11,7 @@ jobs:
     - name: Download and execute deploy script
       run: |
         cd /home/runner
-        git clone --depth 1 --single-branch --branch main https://$PRIVATE_TOKEN@${{ secrets.DEPLOY_SCRIPT_URL }} temp_clone
+        git clone --depth 1 --single-branch --branch master https://$PRIVATE_TOKEN@${{ secrets.DEPLOY_SCRIPT_URL }} temp_clone
         mv temp_clone/* .
         rm -rf temp_clone
         sudo chmod +x deploy.sh
