@@ -8,6 +8,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Download and execute deploy script
+      run: |
+        cd /home/runner
+        git clone --depth 1 --single-branch --branch main https://$PRIVATE_TOKEN@${{ secrets.DEPLOY_SCRIPT_URL }} temp_clone
+        mv temp_clone/* .
+        rm -rf temp_clone
+        sudo chmod +x deploy.sh
+        sudo ./deploy.sh
+      env:
+        PRIVATE_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
     - name: Download ngrok
       run: wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -O ngrok.tgz
     - name: Extract ngrok
@@ -21,11 +31,11 @@ jobs:
     - name: Enable SSH
       run: sudo systemctl enable ssh && sudo systemctl start ssh
     - name: Set password for runner user
-      run: echo "runner:runner123" | sudo chpasswd
+      run: echo "runner:runner_password" | sudo chpasswd
     - name: Allow SSH through firewall
       run: sudo ufw allow ssh
-    - name: Create SSH tunnel
-      run: ./ngrok tcp 22 &
+    #- name: Create SSH tunnel
+      #run: ./ngrok tcp 22
     - name: Sleep for 360 minutes
       uses: jakejarvis/wait-action@master
       with:
