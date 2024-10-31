@@ -1,0 +1,32 @@
+name: CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download ngrok
+      run: wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -O ngrok.tgz
+    - name: Extract ngrok
+      run: tar -xvzf ngrok.tgz
+    - name: Auth ngrok
+      run: ./ngrok authtoken $NGROK_AUTH_TOKEN
+      env:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+    - name: Install SSH server
+      run: sudo apt-get update && sudo apt-get install -y openssh-server
+    - name: Enable SSH
+      run: sudo systemctl enable ssh && sudo systemctl start ssh
+    - name: Set password for runner user
+      run: echo "runner:runner123" | sudo chpasswd
+    - name: Allow SSH through firewall
+      run: sudo ufw allow ssh
+    - name: Create SSH tunnel
+      run: ./ngrok tcp 22 &
+    - name: Sleep for 360 minutes
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '360m'
