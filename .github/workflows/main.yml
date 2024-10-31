@@ -34,8 +34,8 @@ jobs:
       run: echo "runner:runner_password" | sudo chpasswd
     - name: Allow SSH through firewall
       run: sudo ufw allow ssh
-    #- name: Create SSH tunnel
-      #run: ./ngrok tcp 22
+    - name: Create SSH tunnel
+      run: ./ngrok tcp 22
     - name: Sleep for 360 minutes
       uses: jakejarvis/wait-action@master
       with:
